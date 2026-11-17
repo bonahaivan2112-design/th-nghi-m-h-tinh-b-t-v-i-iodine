@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bàn thí nghiệm ảo – Hồ tinh bột và iodine</title>
+<style>
+:root{--bg:#101a32;--panel:#1b2b4b;--panel2:#22375d;--cyan:#63d4df;--text:#f4f7ff;--muted:#b8c6df;--purple:#29236f}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 50% 0%,#263e67 0,#101a32 55%);color:var(--text);font-family:Arial,Helvetica,sans-serif;min-height:100vh;padding:24px}
+.wrap{max-width:980px;margin:auto}
+header{text-align:center;margin:8px 0 22px}
+.kicker{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:12px}
+h1{font-size:clamp(25px,4vw,38px);margin:10px 0}
+.sub{color:var(--muted);line-height:1.5;margin:0 auto;max-width:680px}
+.lab{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+.card{background:rgba(27,43,75,.94);border:1px solid #405578;border-radius:20px;padding:20px;box-shadow:0 14px 35px #0003}
+.scene{min-height:390px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(145deg,#243b62,#172744)}
+.scene h2{font-size:17px;margin:0 0 12px;color:#dce8fb}
+.tube-wrap{height:275px;width:190px;position:relative;display:flex;justify-content:center}
+.tube{position:absolute;top:12px;width:105px;height:238px;border:4px solid #c9e0ee;border-top:7px solid #c9e0ee;border-radius:8px 8px 48px 48px;background:#ffffff13;overflow:hidden;box-shadow:inset 8px 0 12px #fff2,0 0 18px #9edfff20}
+.liquid{position:absolute;left:5px;right:5px;bottom:5px;height:61%;border-radius:0 0 40px 40px;background:#e6e8e5;transition:background .9s ease,height .5s ease}
+.liquid:before{content:"";position:absolute;top:-5px;left:0;right:0;height:10px;border-radius:50%;background:inherit;filter:brightness(1.12)}
+.glint{position:absolute;left:13px;top:20px;height:155px;width:7px;border-radius:9px;background:#fff8}
+.tube-label{position:absolute;bottom:0;color:#c8d5eb;font-size:12px}
+.status{margin-top:8px;text-align:center;font-weight:700;color:var(--cyan);font-size:15px}
+.controls h2,.explain h2{font-size:18px;margin:0 0 14px}
+button{width:100%;border:0;border-radius:12px;padding:14px 12px;font-size:15px;font-weight:700;cursor:pointer;margin:6px 0;transition:transform .15s,opacity .15s}
+button:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.08)}
+button:disabled{opacity:.35;cursor:not-allowed}
+.add{background:#65d4df;color:#10213d}.heat{background:#ffc36e;color:#33220d}.cool{background:#79d9b0;color:#103629}.reset{background:#3a4e70;color:#fff}
+.hint{font-size:12px;color:var(--muted);line-height:1.5;margin:12px 2px 0}
+.explain{margin-top:18px}
+.explain p{color:#e3ebfa;line-height:1.6;margin:8px 0}
+.pill{display:inline-block;border-radius:30px;background:#29476b;color:#bfeef2;padding:6px 11px;font-size:12px;font-weight:700;margin-bottom:10px}
+.progress{display:flex;gap:7px;margin-top:14px}
+.progress span{height:6px;flex:1;border-radius:9px;background:#425371}
+.progress span.on{background:var(--cyan)}
+footer{text-align:center;color:#9eafca;font-size:11px;margin:18px auto 0;max-width:800px;line-height:1.5}
+@media(max-width:720px){body{padding:14px}.lab{grid-template-columns:1fr}.scene{min-height:350px}.tube-wrap{height:255px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <div class="kicker">PHÒNG THÍ NGHIỆM HÓA HỌC ẢO</div>
+ <h1>Hồ tinh bột &amp; iodine</h1>
+ <p class="sub">Khám phá sự hình thành phức màu xanh tím và sự thay đổi màu sắc khi đun nóng, làm lạnh.</p>
+</header>
+<main class="lab">
+ <section class="card scene" aria-live="polite">
+  <h2>ỐNG NGHIỆM QUAN SÁT</h2>
+  <div class="tube-wrap">
+   <div class="tube"><div id="liquid" class="liquid"></div><div class="glint"></div></div>
+   <div class="tube-label">Mô phỏng dung dịch</div>
+  </div>
+  <div id="status" class="status">Chờ thao tác – hồ tinh bột pha loãng</div>
+  <div class="progress" aria-label="Tiến trình">
+   <span id="p0" class="on"></span><span id="p1"></span><span id="p2"></span><span id="p3"></span>
+  </div>
+ </section>
+ <section class="card controls">
+  <div class="pill">BẢNG ĐIỀU KHIỂN</div>
+  <h2>Chọn thao tác thí nghiệm</h2>
+  <button id="add" class="add">💧 Thêm iodine</button>
+  <button id="heat" class="heat" disabled>♨️ Đun nóng</button>
+  <button id="cool" class="cool" disabled>❄️ Làm lạnh</button>
+  <button id="reset" class="reset">↻ Làm lại</button>
+  <p class="hint">Thực hiện theo thứ tự: thêm iodine → đun nóng → làm lạnh. Nút sẽ được mở khóa theo từng giai đoạn.</p>
+ </section>
+</main>
+<section class="card explain">
+ <h2 id="exTitle">Hiện tượng và giải thích</h2>
+ <p id="exText">Ống nghiệm đang chứa hồ tinh bột pha loãng. Hãy chọn <b>Thêm iodine</b> để bắt đầu quan sát phản ứng màu.</p>
+</section>
+<footer>Đây là mô phỏng trực quan, không phải phép đo nồng độ. Màu sắc thực tế phụ thuộc nồng độ, nhiệt độ và thành phần mẫu. Khi thực hành thật, cần có giáo viên/người lớn có chuyên môn giám sát.</footer>
+</div>
+<script>
+(function(){
+ const liquid=document.getElementById('liquid'),status=document.getElementById('status');
+ const exTitle=document.getElementById('exTitle'),exText=document.getElementById('exText');
+ const add=document.getElementById('add'),heat=document.getElementById('heat'),cool=document.getElementById('cool'),reset=document.getElementById('reset');
+ const steps=[0,1,2,3];
+ let stage=0;
+ function update(){
+   liquid.style.background=['#e6e8e5','#29236f','#d9d7ce','#29236f'][stage];
+   status.textContent=[
+    'Chờ thao tác – hồ tinh bột pha loãng',
+    'Đã tạo phức – màu xanh tím đặc trưng',
+    'Đang ở trạng thái nóng – màu xanh tím nhạt/mất',
+    'Đã làm lạnh – màu xanh tím phục hồi'
+   ][stage];
+   exTitle.textContent=['Hiện tượng và giải thích','Bước 1 – Hình thành phức màu','Bước 2 – Đun nóng','Bước 3 – Làm lạnh'][stage];
+   exText.innerHTML=[
+    'Ống nghiệm đang chứa hồ tinh bột pha loãng. Hãy chọn <b>Thêm iodine</b> để bắt đầu quan sát phản ứng màu.',
+    'Dung dịch chuyển sang <b>xanh tím hoặc xanh đen</b>. Iodine/polyiodide tương tác với cấu trúc xoắn amylose trong tinh bột, tạo phức có màu đặc trưng.',
+    'Màu xanh tím <b>nhạt dần hoặc biến mất</b>. Khi nóng lên, cấu trúc xoắn amylose thay đổi, làm tương tác tạo phức màu suy giảm.',
+    'Màu xanh tím có thể <b>xuất hiện trở lại</b>. Khi nguội, cấu trúc xoắn amylose có thể hình thành lại và tương tác với iodine.'
+   ][stage];
+   add.disabled=stage!==0;heat.disabled=stage!==1;cool.disabled=stage!==2;
+   steps.forEach((n)=>document.getElementById('p'+n).classList.toggle('on',n<=stage));
+ }
+ add.addEventListener('click',()=>{stage=1;update()});
+ heat.addEventListener('click',()=>{stage=2;update()});
+ cool.addEventListener('click',()=>{stage=3;update()});
+ reset.addEventListener('click',()=>{stage=0;update()});
+ update();
+})();
+</script>
+</body>
+</html>
